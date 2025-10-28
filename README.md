@@ -1,18 +1,50 @@
-# Iframe Hot-Reload System
+<div align="center"><a name="readme-top"></a>
 
-A standalone system for managing multiple apps with unique subdomain URLs and automatic hot-reload support.
+# 🚀 Iframe Hot-Reload System  
+### Lightweight, sandbox-free dev preview environment — powered by [Hono](https://hono.dev/)
 
-## Features
+![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
+![Node](https://img.shields.io/badge/node-%3E%3D18-blue)
+![Deploy on Render](https://img.shields.io/badge/deploy-Render.com-purple)
 
-- **Subdomain-based routing**: Each app gets a unique URL (e.g., `my-app.localhost:9100`)
-- **Hot-reload support**: Changes to app code automatically reload the iframe
-- **Console capture**: App console logs are captured and displayed in the parent
-- **WebSocket proxying**: Full HMR (Hot Module Replacement) support for Vite
-- **Multi-app management**: Run multiple apps simultaneously with isolated environments
+</div>
 
-## Quick Start
+> **A minimal and self-contained system for local preview environments.**  
+> Each app gets a unique subdomain URL, automatic hot reload, and live console capture — all without containers or sandboxes.
 
-### Local Development
+---
+
+## ✨ Why This Exists
+
+Modern online IDEs (like Sandpack, Lovable.dev, or Replit) are powerful but **complex and heavy**.  
+This system offers a **lightweight alternative** — built on Hono and standard Node.js — ideal for:
+- Local development previews  
+- Multi-app testing  
+- AI coding agents that need ephemeral preview URLs  
+
+It’s not a sandbox. It’s a **controlled iframe + proxy system** for dev previews.
+
+> \[!IMPORTANT]
+>
+> **Star Us**, You will receive all release notifications from GitHub without any delay \~ ⭐️
+
+---
+
+## 🧩 Features
+
+- 🌀 **Subdomain-based routing** → `my-app.localhost:9100`
+- 🔥 **Instant hot reload** → Detects app reloads and updates iframes automatically
+- 🪄 **Console capture** → See your app’s `console.log()` output in the parent frame
+- 🔗 **WebSocket proxying** → Works seamlessly with Vite HMR
+- 🧱 **Multi-app management** → Run multiple isolated apps at once
+- 🧰 **100% standalone** → No Docker, no VMs, no external dependencies
+
+> [!IMPORTANT]  
+> This is **not** a sandbox. It’s meant for controlled dev previews (safe environments, trusted code).
+
+---
+
+## ⚡ Quick Start
 
 ```bash
 # Install dependencies
@@ -20,13 +52,13 @@ npm install
 
 # Start the server
 npm run dev
-```
+````
 
-The server will start on `http://localhost:9100`
+Server starts at `http://localhost:9100`
 
-### Creating an App
+---
 
-1. Create a new directory in `apps/`:
+### 🏗️ Creating an App
 
 ```bash
 mkdir apps/my-first-app
@@ -34,69 +66,68 @@ cd apps/my-first-app
 npm init -y
 ```
 
-2. Add a simple HTML file or Vite project:
+Add an app (HTML or Vite):
 
 ```bash
-# For a simple HTML app
+# Simple HTML
 echo '<h1>Hello World</h1>' > index.html
 npx serve -p 9200
 
-# Or create a Vite app
+# or Vite app
 npm create vite@latest . -- --template vanilla
 npm install
 npm run dev -- --port 9200
 ```
 
-3. Access your app at: `http://my-first-app.localhost:9100`
+Now open:
+➡️ `http://my-first-app.localhost:9100`
 
-## How It Works
+---
 
-### Architecture
+## 🧠 Architecture Overview
 
 ```
-┌─────────────────────────────────────────┐
-│  Main Hono Server (Port 9100)          │
-│  - Subdomain routing                    │
-│  - Proxy to app runtimes                │
-│  - Shim injection                       │
-└─────────────────┬───────────────────────┘
-                  │
-        ┌─────────┴──────────┐
-        │                    │
-┌───────▼──────┐    ┌────────▼─────┐
-│ App Runtime  │    │ App Runtime  │
-│ (Port 9200)  │    │ (Port 9201)  │
-│ my-first-app │    │ another-app  │
-└──────────────┘    └──────────────┘
+┌────────────────────────────────────────────┐
+│ Hono Main Server (Port 9100)               │
+│  - Subdomain routing                       │
+│  - Proxy to app runtimes                   │
+│  - Shim injection + console bridge         │
+└──────────────────┬─────────────────────────┘
+                   │
+         ┌─────────┴──────────┐
+         │                    │
+┌────────▼────────┐   ┌───────▼────────┐
+│ App Runtime     │   │ App Runtime    │
+│ Port 9200       │   │ Port 9201      │
+│ my-first-app    │   │ another-app    │
+└─────────────────┘   └────────────────┘
 ```
 
-### Subdomain System
+---
 
-Each app is assigned a unique subdomain based on its folder name:
-- `apps/my-app/` → `http://my-app.localhost:9100`
-- `apps/test-app/` → `http://test-app.localhost:9100`
+## 🪞 Shim Script
 
-### Shim Client
+Automatically injected into every HTML response:
 
-The system injects a "shim" script into all HTML responses that:
-1. Captures console logs (log, warn, error, etc.)
-2. Sends them to the parent window via `postMessage`
-3. Listens for reload commands
-4. Handles iframe communication
+* Captures console logs
+* Sends them to the parent window (`postMessage`)
+* Detects reloads and signals iframe refresh
+* Manages iframe navigation (back/forward/reload)
 
-### Hot-Reload
+---
 
-When the app's dev server reloads (via Vite HMR or similar):
-1. The shim detects the reload via `beforeunload` event
-2. Sends a "will-reload" message to parent
-3. Parent clears console logs
-4. Iframe automatically reloads with the new content
+## 🔁 Hot Reload Lifecycle
 
-## Configuration
+1. App triggers reload (e.g. Vite HMR)
+2. Shim detects `beforeunload`
+3. Sends `"will-reload"` message to parent
+4. Parent clears console logs + reloads iframe
 
-### Environment Variables
+---
 
-Create a `.env` file:
+## ⚙️ Configuration
+
+`.env` example:
 
 ```env
 PORT=9100
@@ -104,91 +135,70 @@ RUNTIME_BASE_PORT=9200
 NODE_ENV=development
 ```
 
-### Custom Domains
+`src/server/constants.js` (custom domains):
 
-For production, you can configure custom domains in `src/server/constants.js`:
-
-```javascript
-export const DOMAINS = ['yourdomain.com', 'localhost'];
+```js
+export const DOMAINS = ['yourdomain.com', 'localhost']
 ```
 
-## Deployment on Render.com
+---
 
-See [docs/render-deployment.md](./docs/render-deployment.md) for detailed instructions.
+## ☁️ Deployment on Render.com
 
-Quick steps:
-1. Push code to GitHub
-2. Create a new Web Service on Render
-3. Connect your repository
-4. Set build command: `npm install`
-5. Set start command: `npm start`
-6. Add environment variables
-7. Deploy!
+Simple and free-tier friendly.
 
-## API
+1. Push your repo to GitHub
+2. Create a **Web Service** on Render
+3. Build Command → `npm install`
+4. Start Command → `npm start`
+5. Add environment variables
+6. Deploy 🎉
 
-### Server API
+> Detailed steps in [`docs/render-deployment.md`](./docs/render-deployment.md)
 
-The main server exposes these endpoints:
+---
 
-- `GET /` - Lists all running apps
-- `GET /_system/shim/shim.js` - Shim client script
-- `ALL /*` - Proxy to app runtime (based on subdomain)
-
-### Shim Client API
-
-Messages sent from shim to parent:
-
-```javascript
-// Console log
-{
-  type: 'console-log',
-  value: { message: string, type: 'log' | 'warn' | 'error' }
-}
-
-// Before reload
-{
-  type: 'will-reload'
-}
-
-// Open console request
-{
-  type: 'open-console'
-}
-```
-
-Messages sent from parent to shim:
-
-```javascript
-// Force reload
-{
-  type: 'reload-window'
-}
-
-// Navigate back
-{
-  type: 'history-back'
-}
-
-// Navigate forward
-{
-  type: 'history-forward'
-}
-```
-
-## Testing
+## 🧪 Testing
 
 ```bash
 npm test
 ```
 
-Tests cover:
-- URL generation
-- Subdomain parsing
-- Proxy routing
-- Shim injection
-- Console capture
+Covers:
 
-## License
+* Subdomain URL generation
+* Proxy routing
+* Shim injection
+* Console message flow
 
-MIT
+---
+
+## 🤝 Contributing
+
+Contributions are very welcome!
+
+If you want to:
+
+* Improve stability or add tests
+* Enhance iframe–proxy communication
+* Add integrations (e.g. R2, Cloudflare Workers)
+
+Then feel free to:
+
+1. Fork this repository
+2. Create a new branch (`feat/your-feature`)
+3. Open a pull request
+
+> Before submitting a PR, make sure all tests pass:
+> `npm test`
+
+---
+
+## 📜 License
+
+[MIT](./LICENSE) © 2025 [César G. Leañez](https://github.com/cesarleaz)
+
+---
+
+**Iframe Hot-Reload System** —
+*A minimal preview layer built with [Hono](https://hono.dev/) for the next generation of AI coding agents.*
