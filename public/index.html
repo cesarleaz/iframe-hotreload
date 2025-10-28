@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iframe Viewer - Hot Reload System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: #f5f5f5;
+    }
+    
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: white;
+      border-bottom: 1px solid #e0e0e0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .toolbar-section {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .toolbar-section.grow {
+      flex: 1;
+    }
+    
+    .toolbar label {
+      font-weight: 500;
+      color: #333;
+    }
+    
+    .toolbar input {
+      flex: 1;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: monospace;
+    }
+    
+    .toolbar button {
+      padding: 0.5rem 1rem;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    
+    .toolbar button:hover {
+      background: #5568d3;
+    }
+    
+    .toolbar button:active {
+      transform: scale(0.98);
+    }
+    
+    .toolbar button.secondary {
+      background: #6c757d;
+    }
+    
+    .toolbar button.secondary:hover {
+      background: #5a6268;
+    }
+    
+    .main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    
+    .iframe-container {
+      flex: 1;
+      position: relative;
+      background: white;
+    }
+    
+    .iframe-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    
+    .console-panel {
+      width: 400px;
+      display: flex;
+      flex-direction: column;
+      background: #1e1e1e;
+      border-left: 1px solid #333;
+      color: #d4d4d4;
+    }
+    
+    .console-panel.collapsed {
+      width: 0;
+      display: none;
+    }
+    
+    .console-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: #252526;
+      border-bottom: 1px solid #333;
+    }
+    
+    .console-header h3 {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #cccccc;
+    }
+    
+    .console-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .console-actions button {
+      padding: 0.25rem 0.5rem;
+      background: transparent;
+      color: #cccccc;
+      border: 1px solid #444;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+    
+    .console-actions button:hover {
+      background: #333;
+    }
+    
+    .console-logs {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.5rem;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 0.85rem;
+    }
+    
+    .console-log {
+      padding: 0.5rem;
+      border-bottom: 1px solid #2d2d2d;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    
+    .console-log.log {
+      color: #d4d4d4;
+    }
+    
+    .console-log.info {
+      color: #4fc3f7;
+    }
+    
+    .console-log.warn {
+      color: #ffb74d;
+    }
+    
+    .console-log.error {
+      color: #f48fb1;
+    }
+    
+    .console-log.debug {
+      color: #9e9e9e;
+    }
+    
+    .console-empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #666;
+      font-size: 0.9rem;
+    }
+    
+    .status-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 0.5rem;
+    }
+    
+    .status-indicator.loading {
+      background: #ffb74d;
+      animation: pulse 2s infinite;
+    }
+    
+    .status-indicator.ready {
+      background: #4caf50;
+    }
+    
+    .status-indicator.error {
+      background: #f44336;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="toolbar-section grow">
+      <label for="app-url">App URL:</label>
+      <input 
+        type="text" 
+        id="app-url" 
+        placeholder="e.g., http://my-app.localhost:9100"
+        value=""
+      />
+    </div>
+    <div class="toolbar-section">
+      <button id="load-btn">Load</button>
+      <button id="reload-btn" class="secondary">Reload</button>
+      <button id="toggle-console-btn" class="secondary">Console</button>
+    </div>
+  </div>
+  
+  <div class="main-container">
+    <div class="iframe-container">
+      <span class="status-indicator loading"></span>
+      <iframe id="app-iframe" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals"></iframe>
+    </div>
+    
+    <div class="console-panel" id="console-panel">
+      <div class="console-header">
+        <h3>Console Output</h3>
+        <div class="console-actions">
+          <button id="clear-console-btn">Clear</button>
+          <button id="close-console-btn">✕</button>
+        </div>
+      </div>
+      <div class="console-logs" id="console-logs">
+        <div class="console-empty">No logs yet...</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    const appUrlInput = document.getElementById('app-url');
+    const appIframe = document.getElementById('app-iframe');
+    const loadBtn = document.getElementById('load-btn');
+    const reloadBtn = document.getElementById('reload-btn');
+    const toggleConsoleBtn = document.getElementById('toggle-console-btn');
+    const consolePanel = document.getElementById('console-panel');
+    const consoleLogs = document.getElementById('console-logs');
+    const clearConsoleBtn = document.getElementById('clear-console-btn');
+    const closeConsoleBtn = document.getElementById('close-console-btn');
+    const statusIndicator = document.querySelector('.status-indicator');
+    
+    let logs = [];
+    
+    // Load iframe
+    function loadApp() {
+      const url = appUrlInput.value.trim();
+      if (!url) {
+        alert('Please enter an app URL');
+        return;
+      }
+      
+      statusIndicator.className = 'status-indicator loading';
+      appIframe.src = url;
+    }
+    
+    // Reload iframe
+    function reloadApp() {
+      if (appIframe.src) {
+        appIframe.src = appIframe.src;
+      }
+    }
+    
+    // Toggle console panel
+    function toggleConsole() {
+      consolePanel.classList.toggle('collapsed');
+    }
+    
+    // Clear console logs
+    function clearConsole() {
+      logs = [];
+      renderLogs();
+    }
+    
+    // Render console logs
+    function renderLogs() {
+      if (logs.length === 0) {
+        consoleLogs.innerHTML = '<div class="console-empty">No logs yet...</div>';
+        return;
+      }
+      
+      consoleLogs.innerHTML = logs.map(log => 
+        `<div class="console-log ${log.type}">${escapeHtml(log.message)}</div>`
+      ).join('');
+      
+      // Auto-scroll to bottom
+      consoleLogs.scrollTop = consoleLogs.scrollHeight;
+    }
+    
+    // Escape HTML
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    // Listen for messages from iframe
+    window.addEventListener('message', (event) => {
+      if (!event.data || typeof event.data !== 'object') return;
+      
+      const { type, value } = event.data;
+      
+      switch (type) {
+        case 'console-log':
+          logs.push({
+            type: value.type || 'log',
+            message: value.message,
+            timestamp: new Date()
+          });
+          renderLogs();
+          statusIndicator.className = 'status-indicator ready';
+          break;
+          
+        case 'will-reload':
+          statusIndicator.className = 'status-indicator loading';
+          console.log('[Viewer] App is reloading...');
+          break;
+          
+        case 'open-console':
+          consolePanel.classList.remove('collapsed');
+          break;
+      }
+    });
+    
+    // Event listeners
+    loadBtn.addEventListener('click', loadApp);
+    reloadBtn.addEventListener('click', reloadApp);
+    toggleConsoleBtn.addEventListener('click', toggleConsole);
+    clearConsoleBtn.addEventListener('click', clearConsole);
+    closeConsoleBtn.addEventListener('click', toggleConsole);
+    
+    appUrlInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        loadApp();
+      }
+    });
+    
+    // Load from URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const appUrl = urlParams.get('url');
+    if (appUrl) {
+      appUrlInput.value = appUrl;
+      loadApp();
+    }
+    
+    console.log('🎨 Iframe Viewer initialized');
+  </script>
+</body>
+</html>

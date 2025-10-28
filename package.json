@@ -1,0 +1,24 @@
+{
+  "name": "iframe-hotreload-system",
+  "version": "1.0.0",
+  "description": "Standalone iframe/hot-reload system with subdomain-based app management",
+  "type": "module",
+  "main": "src/server/index.js",
+  "scripts": {
+    "dev": "node src/server/index.js",
+    "start": "NODE_ENV=production node src/server/index.js",
+    "test": "node --test tests/**/*.test.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "hono": "^4.6.14",
+    "nanoid": "^5.0.9",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.11"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

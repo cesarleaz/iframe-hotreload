@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: iframe-hotreload-system
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        sync: false
+      - key: RUNTIME_BASE_PORT
+        value: 9200
+    healthCheckPath: /

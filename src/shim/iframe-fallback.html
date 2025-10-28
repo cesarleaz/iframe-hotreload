@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading...</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .container {
+      text-align: center;
+      padding: 2rem;
+    }
+    
+    .spinner {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto 2rem;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+    
+    p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    
+    .status {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="spinner"></div>
+    <h1>Starting your app...</h1>
+    <p>The development server is initializing. This may take a moment.</p>
+    <div class="status" id="status">
+      Checking server status...
+    </div>
+  </div>
+  
+  <script>
+    // Listen for messages from parent
+    window.addEventListener('message', (event) => {
+      if (!event.data || typeof event.data !== 'object') return;
+      
+      const { type, value } = event.data;
+      
+      if (type === 'status-update') {
+        document.getElementById('status').textContent = value.message;
+      }
+      
+      if (type === 'reload-window') {
+        window.location.reload();
+      }
+    });
+    
+    // Notify parent that fallback page is ready
+    window.parent.postMessage({ type: 'fallback-ready' }, '*');
+  </script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple HTML Example</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+    
+    .container {
+      text-align: center;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      max-width: 600px;
+    }
+    
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+    
+    .buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      color: white;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .btn-log {
+      background: #4caf50;
+    }
+    
+    .btn-warn {
+      background: #ff9800;
+    }
+    
+    .btn-error {
+      background: #f44336;
+    }
+    
+    .btn-info {
+      background: #2196f3;
+    }
+    
+    .counter {
+      margin-top: 2rem;
+      font-size: 2rem;
+      font-weight: bold;
+    }
+    
+    .info {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎨 Simple HTML Example</h1>
+    <p>Test console logging and hot-reload functionality</p>
+    
+    <div class="buttons">
+      <button class="btn-log" onclick="testLog()">Console Log</button>
+      <button class="btn-warn" onclick="testWarn()">Console Warn</button>
+      <button class="btn-error" onclick="testError()">Console Error</button>
+      <button class="btn-info" onclick="testInfo()">Console Info</button>
+    </div>
+    
+    <div class="counter" id="counter">0</div>
+    
+    <div class="info">
+      💡 Check the console panel to see captured logs!<br>
+      🔥 Edit this file and save to see hot-reload in action.
+    </div>
+  </div>
+
+  <script>
+    let count = 0;
+    const counterEl = document.getElementById('counter');
+    
+    function testLog() {
+      console.log('✅ This is a log message!', { timestamp: new Date(), count: ++count });
+      updateCounter();
+    }
+    
+    function testWarn() {
+      console.warn('⚠️ This is a warning message!', { level: 'warning', count: ++count });
+      updateCounter();
+    }
+    
+    function testError() {
+      console.error('❌ This is an error message!', { error: true, count: ++count });
+      updateCounter();
+    }
+    
+    function testInfo() {
+      console.info('ℹ️ This is an info message!', { info: 'Additional details', count: ++count });
+      updateCounter();
+    }
+    
+    function updateCounter() {
+      counterEl.textContent = count;
+    }
+    
+    // Log on load
+    console.log('🚀 Simple HTML app loaded!');
+    
+    // Test uncaught error (uncomment to test)
+    // setTimeout(() => {
+    //   throw new Error('This is an uncaught error!');
+    // }, 3000);
+    
+    // Test unhandled promise rejection (uncomment to test)
+    // setTimeout(() => {
+    //   Promise.reject(new Error('This is an unhandled promise rejection!'));
+    // }, 5000);
+  </script>
+</body>
+</html>

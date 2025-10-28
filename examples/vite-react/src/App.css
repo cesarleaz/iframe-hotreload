@@ -1,0 +1,106 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.container {
+  max-width: 600px;
+  padding: 2rem;
+  text-align: center;
+}
+
+h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(10px);
+}
+
+.card h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.card button {
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  background: white;
+  color: #667eea;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.card button:hover {
+  transform: scale(1.05);
+}
+
+.card button:active {
+  transform: scale(0.95);
+}
+
+.buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.buttons button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: white;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.buttons button:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.btn-log {
+  background: #4caf50;
+}
+
+.btn-warn {
+  background: #ff9800;
+}
+
+.btn-error {
+  background: #f44336;
+}
+
+.info {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.info p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+}
